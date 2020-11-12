@@ -42,6 +42,7 @@ if [ "$startsetup" = "false" ] || [ "$startsetup" = "unknown" ]; then
   /usr/sbin/in.tftpd -v --ipv4 --listen --address :69 --secure /tftpboot/
   /usr/bin/opsiconfd -D start
   /usr/bin/opsipxeconfd start &
+  /usr/bin/opsi-setup --auto-configure-samba
 
   while true; do
     runningsmbd=$(pgrep smbd)
