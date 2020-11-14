@@ -129,6 +129,7 @@ docker run -itd --name opsi-server \
 - OPSI_DB_NAME: *Database name*
 - OPSI_DB_OPSI_USER: *Database User*
 - OPSI_DB_OPSI_PASSWORD: *Password for database user*
+- OPSI_PACKAGEUPDATER_UPDATE: *Time in seconds between every opsi-package-updater*
 
 ## 6 Ports
 

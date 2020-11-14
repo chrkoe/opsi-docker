@@ -11,6 +11,7 @@ ENV OPSI_DB_HOST=""
 ENV OPSI_DB_NAME="opsi"
 ENV OPSI_DB_OPSI_USER="opsiadmin"
 ENV OPSI_DB_OPSI_PASSWORD="linux123"
+ENV OPSI_PACKAGEUPDATER_UPDATE="0"
 
 RUN apt update -qq \
  && apt install -y -qq hostname apt-utils iputils-ping openssl net-tools openssh-client vim \
@@ -32,7 +33,7 @@ RUN apt install -y -qq opsi-tftpd-hpa opsi-server opsi-windows-support \
  && apt-get clean
 RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-VOLUME ["/var/lib/opsi/", "/etc/opsi/"]
+VOLUME ["/var/lib/opsi/", "/etc/opsi/", "/var/log/opsi/", "/var/log/samba/"]
 
 COPY ./scripts/setup.sh /usr/local/bin/
 COPY ./scripts/entrypoint.sh /usr/local/bin/
@@ -41,4 +42,3 @@ COPY ./scripts/opsipxeconfd.conf /root/
 EXPOSE 139/tcp 445/tcp 4447/tcp 69/udp 137/udp 138/udp
 
 ENTRYPOINT "/usr/local/bin/entrypoint.sh"
-

@@ -30,19 +30,25 @@ mkdir /var/run/opsipxeconfd
 chown root:opsiadmin /var/run/opsipxeconfd
 
 if [ "$startsetup" = "true" ]; then
-  echo "Starting setup script"
-  echo "Please wait..."
+  echo "`date` [INFO] Starting setup script"
+  echo "`date` [INFO] Please wait..."
   /usr/local/bin/setup.sh
   startsetup="false"
 fi
 if [ "$startsetup" = "false" ] || [ "$startsetup" = "unknown" ]; then
+  date +%s | sha256sum | base64 | head -c 32 | /usr/bin/opsi-admin -d task setPcpatchPassword
   /usr/bin/opsi-setup --set-rights
-  echo "Starting services"
+  echo "`date` [INFO] Starting services"
   /usr/sbin/smbd -D
   /usr/sbin/in.tftpd -v --ipv4 --listen --address :69 --secure /tftpboot/
   /usr/bin/opsiconfd -D start
   /usr/bin/opsipxeconfd start &
   /usr/bin/opsi-setup --auto-configure-samba
+  
+  re='^[0-9]+$'
+  if ! [[ $OPSI_PACKAGEUPDATER_UPDATE =~ $re ]] ; then
+    echo "`date` [WARNING] Variable OPSI_PACKAGEUPDATER_UPDATE is not a number. opsi-package-updater will not run periodically."
+  fi
 
   while true; do
     runningsmbd=$(pgrep smbd)
@@ -70,4 +76,4 @@ if [ "$startsetup" = "false" ] || [ "$startsetup" = "unknown" ]; then
     sleep 20
   done
 fi
-echo "Exit"
+echo "`date` [INFO] Exit"
