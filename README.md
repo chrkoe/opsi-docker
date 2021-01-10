@@ -4,7 +4,8 @@
 - [2 Run](#2-run)
   - [2.1 File backend](#21-file-backend)
   - [2.2 MySQL backend](#22-mysql-backend)
-  - [2.3 Completing setup](#23-completing-setup)
+  - [2.3 Persistent log files](23-persistent-log-files)
+  - [2.4 Completing setup](#24-completing-setup)
 - [3 Running commands inside the container](#3-running-commands-inside-the-container)
 - [4 Additional information](#4-additional-information)
 - [5 Variables](#5-variables)
@@ -67,7 +68,16 @@ docker run -itd --name opsi-server \
  opsi-docker:4.1
 ```
 
-### 2.3 Completing setup
+### 2.3 Persistent log files
+
+If you want to have persistent log files add the following volume mounts to your docker command:
+
+```bash
+-v /media/dockerdate/opsi/var/log/opsi/:/var/log/opsi/ \
+-v /media/dockerdata/opsi/var/log/samba/:/var/log/samba/
+```
+
+### 2.4 Completing setup
 
 For the initial setup after the first start of your container (in detattched mode) you need to run (in the first 30 seconds after the container started):
 
