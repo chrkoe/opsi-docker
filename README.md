@@ -5,7 +5,8 @@
   - [2.1 File backend](#21-file-backend)
   - [2.2 MySQL backend](#22-mysql-backend)
   - [2.3 Persistent log files](23-persistent-log-files)
-  - [2.4 Completing setup](#24-completing-setup)
+  - [2.4 Scheduled opsi-package-updater](24-scheduled-opsi-package-updater)
+  - [2.5 Completing setup](#25-completing-setup)
 - [3 Running commands inside the container](#3-running-commands-inside-the-container)
 - [4 Additional information](#4-additional-information)
 - [5 Variables](#5-variables)
@@ -77,7 +78,25 @@ If you want to have persistent log files add the following volume mounts to your
 -v /media/dockerdata/opsi/var/log/samba/:/var/log/samba/
 ```
 
-### 2.4 Completing setup
+### 2.4 Scheduled opsi-package-updater
+
+If you have configured some external repositories and don't want to run the `opsi-package-updater` command manually you can set up one cronjob for this.
+
+For now please validate yourself that your crontab syntax is correct.
+
+```bash
+-e OPSI_PACKAGEUPDATER_UPDATE="0 * * * *" \
+```
+
+or
+
+```bash
+-e OPSI_PACKAGEUPDATER_UPDATE="@hourly" \
+```
+
+**You don't have to attach the command!**
+
+### 2.5 Completing setup
 
 For the initial setup after the first start of your container (in detattched mode) you need to run (in the first 30 seconds after the container started):
 

@@ -45,9 +45,11 @@ if [ "$startsetup" = "false" ] || [ "$startsetup" = "unknown" ]; then
   /usr/bin/opsipxeconfd start &
   /usr/bin/opsi-setup --auto-configure-samba
   
-  re='^[0-9]+$'
-  if ! [[ $OPSI_PACKAGEUPDATER_UPDATE =~ $re ]] ; then
-    echo "`date` [WARNING] Variable OPSI_PACKAGEUPDATER_UPDATE is not a number. opsi-package-updater will not run periodically."
+  re="/(@(annually|yearly|monthly|weekly|daily|hourly|reboot))|(@every (\d+(ns|us|µs|ms|s|m|h))+)|((((\d+,)+\d+|(\d+(\/|-)\d+)|\d+|\*) ?){5,7})/"
+  if [[ $OPSI_PACKAGEUPDATER_UPDATE =~ $re ]] ; then
+    touch /tmp/opsipackageupdatercron
+    echo "$OPSI_PACKAGEUPDATER_UPDATE opsi-package-updater-v update > /proc/1/fd/1 2>/proc/1/fd/2" > /tmp/opsipackageupdatercron 2>&1
+    cron -L 7 /tmp/opsipackageupdatercron
   fi
 
   while true; do

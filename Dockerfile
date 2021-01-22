@@ -17,7 +17,7 @@ RUN apt update -qq \
  && apt install -y -qq hostname apt-utils iputils-ping openssl net-tools openssh-client vim \
  && apt install -y -qq wget lsof host python-mechanize p7zip-full cabextract openbsd-inetd pigz cpio \
  && apt install -y -qq samba samba-common smbclient cifs-utils \
- && apt install -y -qq curl
+ && apt install -y -qq curl cron
 
 RUN echo "deb http://download.opensuse.org/repositories/home:/uibmz:/opsi:/4.1:/stable/Debian_10/ /" > /etc/apt/sources.list.d/opsi.list \
  && wget -O - http://download.opensuse.org/repositories/home:/uibmz:/opsi:/4.1:/stable/Debian_10/Release.key | apt-key add - \
