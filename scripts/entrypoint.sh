@@ -48,7 +48,7 @@ if [ "$startsetup" = "false" ] || [ "$startsetup" = "unknown" ]; then
   re="/(@(annually|yearly|monthly|weekly|daily|hourly|reboot))|(@every (\d+(ns|us|µs|ms|s|m|h))+)|((((\d+,)+\d+|(\d+(\/|-)\d+)|\d+|\*) ?){5,7})/"
   if [[ $OPSI_PACKAGEUPDATER_UPDATE =~ $re ]] ; then
     touch /etc/opsi/opsipackageupdatercron
-    echo "$OPSI_PACKAGEUPDATER_UPDATE opsi-package-updater -v update" > /etc/opsi/opsipackageupdatercron
+    echo "$OPSI_PACKAGEUPDATER_UPDATE root opsi-package-updater -v update" > /etc/opsi/opsipackageupdatercron
     echo " ">> /etc/opsi/opsipackageupdatercron
     chmod 744 /etc/opsi/opsipackageupdatercron
     cron -L 7 /etc/opsi/opsipackageupdatercron
