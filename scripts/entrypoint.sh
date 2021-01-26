@@ -48,7 +48,8 @@ if [ "$startsetup" = "false" ] || [ "$startsetup" = "unknown" ]; then
   re="/(@(annually|yearly|monthly|weekly|daily|hourly|reboot))|(@every (\d+(ns|us|µs|ms|s|m|h))+)|((((\d+,)+\d+|(\d+(\/|-)\d+)|\d+|\*) ?){5,7})/"
   if [[ $OPSI_PACKAGEUPDATER_UPDATE =~ $re ]] ; then
     touch /tmp/opsipackageupdatercron
-    echo "$OPSI_PACKAGEUPDATER_UPDATE opsi-package-updater-v update > /proc/1/fd/1 2>/proc/1/fd/2" > /tmp/opsipackageupdatercron 2>&1
+    echo "$OPSI_PACKAGEUPDATER_UPDATE opsi-package-updater -v update" > /tmp/opsipackageupdatercron 2>&1
+    chmod 744 /tmp/opsipackageupdatercron
     cron -L 7 /tmp/opsipackageupdatercron
   fi
 
