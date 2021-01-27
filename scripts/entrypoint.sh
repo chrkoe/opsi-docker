@@ -45,13 +45,19 @@ if [ "$startsetup" = "false" ] || [ "$startsetup" = "unknown" ]; then
   /usr/bin/opsipxeconfd start &
   /usr/bin/opsi-setup --auto-configure-samba
   
-  re="/(@(annually|yearly|monthly|weekly|daily|hourly|reboot))|(@every (\d+(ns|us|µs|ms|s|m|h))+)|((((\d+,)+\d+|(\d+(\/|-)\d+)|\d+|\*) ?){5,7})/"
-  if [[ $OPSI_PACKAGEUPDATER_UPDATE =~ $re ]] ; then
-    touch /etc/opsi/opsipackageupdatercron
-    echo "$OPSI_PACKAGEUPDATER_UPDATE root opsi-package-updater -v update" > /etc/opsi/opsipackageupdatercron
-    echo " ">> /etc/opsi/opsipackageupdatercron
-    chmod 744 /etc/opsi/opsipackageupdatercron
-    cron -L 7 /etc/opsi/opsipackageupdatercron
+  re="^(@(annually|yearly|monthly|weekly|daily|hourly|reboot))|(@every (\d+(ns|us|µs|ms|s|m|h))+)|((((\d+,)+\d+|(\d+(\/|-)\d+)|\d+|\*) ?){5,7})$"
+  if [[ "$OPSI_PACKAGEUPDATER_UPDATE" =~ $re ]]; then
+    echo "`date` [INFO] Setup cron..."
+    CRONFILE="/etc/cron.d/opsipackageupdatercron"
+    touch $CRONFILE
+    touch /var/log/cron.log
+    echo "$OPSI_PACKAGEUPDATER_UPDATE root opsi-package-updater-v update >> /var/log/cron.log 2>&1" > $CRONFILE
+    echo "# Don't remove the empty line at the end of this file. It is required to run the cron job" >> $CRONFILE
+    chmod 0744 $CRONFILE
+    cron -L 7 $CRONFILE
+    echo "`date` [INFO] cron started..."
+  else
+    echo "`date` [WARNING] $OPSI_PACKAGEUPDATER_UPDATE not set or not matching cron syntax. Skipping"
   fi
 
   while true; do
