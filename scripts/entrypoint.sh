@@ -30,19 +30,35 @@ mkdir /var/run/opsipxeconfd
 chown root:opsiadmin /var/run/opsipxeconfd
 
 if [ "$startsetup" = "true" ]; then
-  echo "Starting setup script"
-  echo "Please wait..."
+  echo "`date` [INFO] Starting setup script"
+  echo "`date` [INFO] Please wait..."
   /usr/local/bin/setup.sh
   startsetup="false"
 fi
 if [ "$startsetup" = "false" ] || [ "$startsetup" = "unknown" ]; then
+  date +%s | sha256sum | base64 | head -c 32 | /usr/bin/opsi-admin -d task setPcpatchPassword
   /usr/bin/opsi-setup --set-rights
-  echo "Starting services"
+  echo "`date` [INFO] Starting services"
   /usr/sbin/smbd -D
   /usr/sbin/in.tftpd -v --ipv4 --listen --address :69 --secure /tftpboot/
   /usr/bin/opsiconfd -D start
   /usr/bin/opsipxeconfd start &
   /usr/bin/opsi-setup --auto-configure-samba
+  
+  re="^(@(annually|yearly|monthly|weekly|daily|hourly|reboot))|(@every (\d+(ns|us|µs|ms|s|m|h))+)|((((\d+,)+\d+|(\d+(\/|-)\d+)|\d+|\*) ?){5,7})$"
+  if [[ "$OPSI_PACKAGEUPDATER_UPDATE" =~ $re ]]; then
+    echo "`date` [INFO] Setup cron..."
+    CRONFILE="/etc/cron.d/opsipackageupdatercron"
+    touch $CRONFILE
+    touch /var/log/cron.log
+    echo "$OPSI_PACKAGEUPDATER_UPDATE root opsi-package-updater -v update >> /var/log/cron.log 2>&1" > $CRONFILE
+    echo "# Don't remove the empty line at the end of this file. It is required to run the cron job" >> $CRONFILE
+    chmod 0744 $CRONFILE
+    cron -L 7 $CRONFILE
+    echo "`date` [INFO] cron started..."
+  else
+    echo "`date` [WARNING] $OPSI_PACKAGEUPDATER_UPDATE not set or not matching cron syntax. Skipping"
+  fi
 
   while true; do
     runningsmbd=$(pgrep smbd)
@@ -70,4 +86,4 @@ if [ "$startsetup" = "false" ] || [ "$startsetup" = "unknown" ]; then
     sleep 20
   done
 fi
-echo "Exit"
+echo "`date` [INFO] Exit"

@@ -11,12 +11,13 @@ ENV OPSI_DB_HOST=""
 ENV OPSI_DB_NAME="opsi"
 ENV OPSI_DB_OPSI_USER="opsiadmin"
 ENV OPSI_DB_OPSI_PASSWORD="linux123"
+ENV OPSI_PACKAGEUPDATER_UPDATE="0"
 
 RUN apt update -qq \
  && apt install -y -qq hostname apt-utils iputils-ping openssl net-tools openssh-client vim \
  && apt install -y -qq wget lsof host python-mechanize p7zip-full cabextract openbsd-inetd pigz cpio \
  && apt install -y -qq samba samba-common smbclient cifs-utils \
- && apt install -y -qq curl
+ && apt install -y -qq curl cron
 
 RUN echo "deb http://download.opensuse.org/repositories/home:/uibmz:/opsi:/4.1:/stable/Debian_10/ /" > /etc/apt/sources.list.d/opsi.list \
  && wget -O - http://download.opensuse.org/repositories/home:/uibmz:/opsi:/4.1:/stable/Debian_10/Release.key | apt-key add - \
@@ -29,10 +30,11 @@ RUN update-inetd --remove tftp \
 RUN apt install -y -qq debconf \
  && echo "opsi-tftpd-hpa tftpd-hpa/directory string /tftpboot" | debconf-set-selections
 RUN apt install -y -qq opsi-tftpd-hpa opsi-server opsi-windows-support \
+ && apt upgrade -y -qq \
  && apt-get clean
 RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-VOLUME ["/var/lib/opsi/", "/etc/opsi/"]
+VOLUME ["/var/lib/opsi/", "/etc/opsi/", "/var/log/opsi/", "/var/log/samba/"]
 
 COPY ./scripts/setup.sh /usr/local/bin/
 COPY ./scripts/entrypoint.sh /usr/local/bin/
@@ -41,4 +43,3 @@ COPY ./scripts/opsipxeconfd.conf /root/
 EXPOSE 139/tcp 445/tcp 4447/tcp 69/udp 137/udp 138/udp
 
 ENTRYPOINT "/usr/local/bin/entrypoint.sh"
-
