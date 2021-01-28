@@ -30,6 +30,7 @@ RUN update-inetd --remove tftp \
 RUN apt install -y -qq debconf \
  && echo "opsi-tftpd-hpa tftpd-hpa/directory string /tftpboot" | debconf-set-selections
 RUN apt install -y -qq opsi-tftpd-hpa opsi-server opsi-windows-support \
+ && apt upgrade -y -qq \
  && apt-get clean
 RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
