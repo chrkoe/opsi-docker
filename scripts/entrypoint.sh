@@ -51,7 +51,7 @@ if [ "$startsetup" = "false" ] || [ "$startsetup" = "unknown" ]; then
     CRONFILE="/etc/cron.d/opsipackageupdatercron"
     touch $CRONFILE
     touch /var/log/cron.log
-    echo "$OPSI_PACKAGEUPDATER_UPDATE root opsi-package-updater-v update >> /var/log/cron.log 2>&1" > $CRONFILE
+    echo "$OPSI_PACKAGEUPDATER_UPDATE root opsi-package-updater -v update >> /var/log/cron.log 2>&1" > $CRONFILE
     echo "# Don't remove the empty line at the end of this file. It is required to run the cron job" >> $CRONFILE
     chmod 0744 $CRONFILE
     cron -L 7 $CRONFILE
